@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "com.lunazstudios.craftoflegends.mixin.client",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "ExampleClientMixin",
+    "PlayerEntityRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+	}
+}
