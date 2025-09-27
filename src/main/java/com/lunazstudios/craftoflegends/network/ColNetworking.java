@@ -4,6 +4,8 @@ import com.lunazstudios.craftoflegends.CraftOfLegends;
 import com.lunazstudios.craftoflegends.control.ServerColState;
 import com.lunazstudios.craftoflegends.packet.MoveTargetC2SPacket;
 import com.lunazstudios.craftoflegends.packet.MoveTargetS2CPacket;
+import com.lunazstudios.craftoflegends.packet.SyncPlayerStatsS2CPacket;
+import com.lunazstudios.craftoflegends.stats.PlayerStats;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -53,5 +55,13 @@ public final class ColNetworking {
                     });
                 }
         );
+    }
+
+    public static void sendStats(ServerPlayerEntity player, PlayerStats s) {
+        ServerPlayNetworking.send(player, new SyncPlayerStatsS2CPacket(
+                s.getHealth(), s.getMana(), s.getLevel(), s.getXp(), s.getAbilityPoints(), s.getGold(),
+                s.getAttackDamage(), s.getAbilityPower(), s.getArmor(), s.getMagicResist(), s.getAbilityHaste(), s.getMoveSpeed(),
+                s.getAttackSpeed(), s.getCritChance()
+        ));
     }
 }
