@@ -3,7 +3,12 @@
   "package": "com.lunazstudios.craftoflegends.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "CameraMixin",
+    "ClientPlayerEntityMixin",
     "ExampleClientMixin",
+    "InGameHudMixin",
+    "KeyboardInputMixin",
+    "MouseMixin",
     "PlayerEntityRendererMixin"
   ],
   "injectors": {

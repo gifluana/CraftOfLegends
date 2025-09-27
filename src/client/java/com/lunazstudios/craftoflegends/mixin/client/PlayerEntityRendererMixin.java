@@ -1,21 +1,18 @@
 package com.lunazstudios.craftoflegends.mixin.client;
 
-import com.lunazstudios.craftoflegends.bbmodel.BbModel;
 import com.lunazstudios.craftoflegends.bbmodel.BbModelLoader;
 import com.lunazstudios.craftoflegends.bbmodel.BbRigLoader;
 import com.lunazstudios.craftoflegends.bbmodel.BbRuntimeRenderer;
-import com.lunazstudios.craftoflegends.render.BbEntityModel;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -61,12 +58,21 @@ public abstract class PlayerEntityRendererMixin
         if (this.col$runtime == null) return;
 
         matrices.push();
-        this.setupTransforms(player, matrices, yaw, tickDelta, 0.0F, 0.0F);
+
+        float animProgress = player.age + tickDelta;
+
+        float body = MathHelper.lerpAngleDegrees(tickDelta, player.prevBodyYaw, player.bodyYaw);
+        float head = MathHelper.lerpAngleDegrees(tickDelta, player.prevHeadYaw,  player.headYaw);
+
+        float headRel = MathHelper.wrapDegrees(head - body);
+
+        headRel = MathHelper.clamp(headRel, -85.0F, 85.0F);
+
+        this.setupTransforms(player, matrices, body, tickDelta, animProgress, headRel);
         this.scale(player, matrices, tickDelta);
 
         this.col$runtime.setTime((player.age + tickDelta) / 20f);
-
-        var layer = RenderLayer.getEntityTranslucent(this.col$runtime.textureId());
+        var layer = RenderLayer.getEntityCutoutNoCull(this.col$runtime.textureId());
         var vc = vertices.getBuffer(layer);
         this.col$runtime.render(matrices, vc, light, OverlayTexture.DEFAULT_UV);
 
